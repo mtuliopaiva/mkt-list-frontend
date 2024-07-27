@@ -3,8 +3,11 @@ import { parseCookies } from "nookies";
 
 const { "auth.token": token } = parseCookies();
 
+const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+console.log('Base URL:', baseURL); // Adicione um console.log para depuração
+
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: baseURL,
   headers: {
     Authorization: token ? `Bearer ${token}` : "",
   },
@@ -34,7 +37,7 @@ export async function apiRequest<T>(
 }
 
 export const apiForm = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: baseURL,
   headers: {
     Authorization: token ? `Bearer ${token}` : "",
     "Content-Type": "multipart/form-data",

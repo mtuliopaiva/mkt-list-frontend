@@ -15,6 +15,7 @@ import SettingsPage from "./pages/admin/Settings";
 
 const AppRoutes: React.FC = () => {
   return (
+    <React.Suspense fallback={<>Loading...</>}>
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
@@ -35,6 +36,8 @@ const AppRoutes: React.FC = () => {
         {/* Client Routes */}
       </Routes>
     </Router>
+    </React.Suspense>
+
   );
 };
 

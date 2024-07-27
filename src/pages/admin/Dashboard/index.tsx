@@ -14,20 +14,9 @@ const DashboardPage = () => {
     categories: 8,
   });
 
-  const [connectionTest, setConnectionTest] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiRequest<any>("get", "/test-connection");
-        setConnectionTest("Connection successful!");
-      } catch (error) {
-        setConnectionTest("Connection failed!");
-        console.error("Erro ao testar a conexão", error);
-      }
-    };
 
-    fetchData();
   }, []);
 
   return (
