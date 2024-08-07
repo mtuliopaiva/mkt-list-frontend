@@ -3,7 +3,7 @@ import { Card, Statistic } from "antd";
 import { ArrowUpOutlined } from "@ant-design/icons";
 import LayoutBaseAdmin from "../../../components/LayoutBaseAdmin";
 import TextComponent from "../../../components/TextComponent";
-import { apiRequest } from "../../../services/api";
+import { apiRequest } from "../../../services/api.service";
 // import { apiRequest } from "../../../services/api";
 
 const DashboardPage = () => {

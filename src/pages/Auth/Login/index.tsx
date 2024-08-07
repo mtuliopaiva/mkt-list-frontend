@@ -6,7 +6,7 @@ import ButtonComponent from "../../../components/Buttons/ButtonComponent";
 import loginImage from '../../../../public/general/mkt-list-image.png';
 import { notification, Form } from "antd";
 import { useState } from "react";
-import { useAuth } from '../../../Context/AuthContext';
+import { useAuth } from "../../../Context/AuthContext";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,6 +24,7 @@ const LoginPage = () => {
 
       if (result.success) {
         navigate('/admin/dashboard');
+        console.log('Login successful', result.user);
       } else {
         notification.error({
           message: 'Erro de autenticação',

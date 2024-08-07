@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { apiRequest } from "./api.service";
 
 export async function login(authLogin: AuthLoginDto) {
   return apiRequest<VerifyAuthDto>("post", `/auth/login`, authLogin);

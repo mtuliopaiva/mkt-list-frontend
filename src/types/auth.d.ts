@@ -13,7 +13,7 @@ type AuthLoginDto = {
   };
   
   type VerifyAuthDto = {
-    accessToken: string;
+    access_token: string;
     userData: ReadUsersDto;
   };
   

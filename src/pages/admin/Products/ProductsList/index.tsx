@@ -10,15 +10,9 @@ import { SearchProps } from "antd/es/input";
 import { useNavigate } from "react-router-dom";
 import LayoutBaseAdmin from "../../../../components/LayoutBaseAdmin";
 import TextComponent from "../../../../components/TextComponent";
-
-interface DataType {
-  key: string;
-  name: string;
-  category: string;
-  brand: string;
-  color: string;
-  sizes: string[];
-}
+import { useEffect, useState } from "react";
+import { listProductsAndSearch } from "../../../../services/product.service";
+import { formatDate } from "../../../../utils/formatDate";
 
 const { Search } = Input;
 const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
@@ -27,7 +21,10 @@ const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
 const ProductsList = () => {
   const navigate = useNavigate();
 
-  const columns: TableProps<DataType>["columns"] = [
+  const [productsData, setProductsData] = useState<ReadProductDto[]>([]);
+
+
+  const columns: TableProps<ReadProductDto>["columns"] = [
     {
       title: "Nome",
       dataIndex: "name",
@@ -40,55 +37,15 @@ const ProductsList = () => {
       key: "category",
     },
     {
-      title: "Marca",
-      dataIndex: "brand",
-      key: "brand",
+      title: "Preço",
+      dataIndex: "price",
+      key: "price",
     },
     {
-      title: "Cor",
-      dataIndex: "color",
-      key: "color",
-    },
-    {
-      title: "Tamanhos",
-      key: "sizes",
-      dataIndex: "sizes",
-      render: (_, { sizes }) => (
-        <>
-          {sizes.map((size) => {
-            let color;
-            switch (size) {
-              case "PP":
-                color = "#ffcccc";
-                break;
-              case "P":
-                color = "#ff6666";
-                break;
-              case "M":
-                color = "#ffff99";
-                break;
-              case "G":
-                color = "#cc99ff";
-                break;
-              case "GG":
-                color = "#9933ff";
-                break;
-              default:
-                color = "#add8e6";
-                break;
-            }
-            return (
-              <Tag
-                color={color}
-                key={size}
-                style={{ color: "#000", fontWeight: "700" }}
-              >
-                {size.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      title: "Data de criação",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (createdAt: Date) => formatDate(createdAt),
     },
     {
       title: "Ações",
@@ -128,64 +85,29 @@ const ProductsList = () => {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: "1",
-      name: "Camiseta listrada - Nike",
-      category: "Camiseta",
-      brand: "Nike",
-      color: "Branco/Preto",
-      sizes: ["P", "PP", "M", "G", "GG"],
-    },
-    {
-      key: "2",
-      name: "Calça jeans skinny - Levi's",
-      category: "Calça",
-      brand: "Levi's",
-      color: "Azul",
-      sizes: ["38", "40", "42", "44", "46"],
-    },
-    {
-      key: "3",
-      name: "Tênis esportivo - Adidas",
-      category: "Tênis",
-      brand: "Adidas",
-      color: "Branco",
-      sizes: ["38", "39", "40", "41", "42"],
-    },
-    {
-      key: "4",
-      name: "Camiseta básica - Puma",
-      category: "Camiseta",
-      brand: "Puma",
-      color: "Cinza",
-      sizes: ["P", "M", "G", "GG"],
-    },
-    {
-      key: "5",
-      name: "Calça moletom - Nike",
-      category: "Calça",
-      brand: "Nike",
-      color: "Preto",
-      sizes: ["P", "M", "G", "GG"],
-    },
-    {
-      key: "6",
-      name: "Tênis casual - Converse",
-      category: "Tênis",
-      brand: "Converse",
-      color: "Preto",
-      sizes: ["37", "38", "39", "40", "41"],
-    },
-    {
-      key: "7",
-      name: "Camiseta estampada - Vans",
-      category: "Camiseta",
-      brand: "Vans",
-      color: "Preto/Vermelho",
-      sizes: ["P", "PP", "M", "G", "GG"],
-    },
-  ];
+  async function getProductsList(
+    page: number,
+    itemsPerPage: number,
+    search: string
+  ) {
+    try {
+      const response = await listProductsAndSearch(
+        page,
+        itemsPerPage,
+        search
+      );
+      console.log(response);
+      setProductsData(response.data);
+    } catch (error) {
+      console.error("Ocorreu um erro ao obter os dados de auditoria:", error);
+    }
+  }
+  
+  useEffect(() => {
+
+    getProductsList(1,20,'');
+
+  }, []);
 
   return (
     <>
@@ -215,7 +137,7 @@ const ProductsList = () => {
               Produto
             </Button>
           </div>
-          <Table className="my-6" columns={columns} dataSource={data} />
+          <Table className="my-6" columns={columns} dataSource={productsData} />
         </div>
       </LayoutBaseAdmin>
     </>
