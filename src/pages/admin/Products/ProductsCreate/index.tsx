@@ -1,13 +1,14 @@
-import { Input } from "antd";
+import { Input, InputNumber, message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
-
 import { SkinOutlined } from "@ant-design/icons";
 import { Button, Form, Select, Upload } from "antd";
 import TextComponent from "../../../../components/TextComponent";
 import LayoutBaseAdmin from "../../../../components/LayoutBaseAdmin";
+import { listCategoriesAndSearch } from "../../../../services/categories.service";
+import { useEffect, useState } from "react";
+import { createProduct } from "../../../../services/product.service";
 
 const { Option } = Select;
-
 
 const normFile = (e: any) => {
   console.log("Upload event:", e);
@@ -17,13 +18,48 @@ const normFile = (e: any) => {
   return e?.fileList;
 };
 
-const onFinish = (values: any) => {
-  console.log("Received values of form: ", values);
-};
+
 
 const ProductsCreate = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState<ReadCategoryDto[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  const onFinish = async (values: any) => {
+    console.log("Received values of form: ", values);
+  
+    try {
+      const response = await createProduct({
+        name: values.name,
+        price: values.price,
+        categoryUuid: values.category,
+      });
+
+      console.log(response);
+      navigate('/admin/products');
+  
+      message.success("Produto criado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao criar o produto:", error);
+      message.error("Erro ao criar o produto. Tente novamente.");
+    }
+  };
+
+  async function getCategoriesList(search: string) {
+    try {
+      setLoading(true);
+      const response = await listCategoriesAndSearch(1, 20, search);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Ocorreu um erro ao obter as categorias:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getCategoriesList("");
+  }, []);
 
   return (
     <>
@@ -48,118 +84,64 @@ const ProductsCreate = () => {
                 >
                   <Upload.Dragger name="files" action="/upload.do">
                     <p className="ant-upload-drag-icon">
-                      <SkinOutlined style={{color: '#243D5C'}}/>
+                      <SkinOutlined style={{ color: "#243D5C" }} />
                     </p>
                     <p className="ant-upload-text">
                       Clique ou arraste o arquivo para a área de upload
                     </p>
-                   
                   </Upload.Dragger>
                 </Form.Item>
               </div>
 
               <div className="w-1/2 pr-4 h-[380px]">
-                <div className="w-full flex gap-6">
-                  <Form.Item
-                    name="name"
-                    label="Nome"
-                    rules={[{ required: true }]}
-                    className="w-1/3"
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="brand"
-                    label="Marca"
-                    rules={[{ required: true }]}
-                    className="w-1/3"
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="category"
-                    label="Categoria"
-                    hasFeedback
-                    rules={[
-                      { required: true, message: "Selecione a categoria" },
-                    ]}
-                    className="w-1/3"
-                  >
-                    <Select placeholder="Selecione a categoria">
-                      <Option value="shirt">Camisetas</Option>
-                      <Option value="pants">Calças</Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-
                 <Form.Item
-                  name="colorOptions"
-                  label="Cores"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select your favourite colors!",
-                      type: "array",
-                    },
-                  ]}
+                  name="name"
+                  label="Nome"
+                  rules={[{ required: true }]}
+                  className="w-full"
                 >
-                  <Select mode="multiple" placeholder="Selecione as cores">
-                    <Option value="red">Vermelho</Option>
-                    <Option value="green">Verde</Option>
-                    <Option value="blue">Azul</Option>
-                  </Select>
+                  <Input />
                 </Form.Item>
 
                 <Form.Item
-                  name="sizeOptions"
-                  label="Tamanhos"
-                  rules={[
-                    {
-                      required: false,
-                      message: "Please select the sizes!",
-                      type: "array",
-                    },
-                  ]}
+                  name="price"
+                  label="Preço"
+                  rules={[{ required: true, type: 'number', min: 0 }]}
                 >
-                  <Select mode="multiple" placeholder="Selecione os tamanhos">
-                    <Option value="extraSmall">PP</Option>
-                    <Option value="small">P</Option>
-                    <Option value="medium">M</Option>
-                    <Option value="big">G</Option>
-                    <Option value="extraBig">GG</Option>
-                  </Select>
+                  <InputNumber 
+                    style={{ width: '100%' }} 
+                    min={0} 
+                    step={0.01} 
+                    placeholder="Digite o preço" 
+                  />
                 </Form.Item>
 
                 <Form.Item
-                  name="sizeNumberOptions"
-                  label="Tamanho numérico"
-                  rules={[
-                    {
-                      required: false,
-                      message: "Please select the sizes!",
-                      type: "array",
-                    },
-                  ]}
+                  name="category"
+                  label="Categoria"
+                  hasFeedback
+                  rules={[{ required: true, message: "Selecione a categoria" }]}
                 >
-                  <Select mode="multiple" placeholder="Selecione os tamanhos">
-                    <Option value="num35">35</Option>
-                    <Option value="num36">36</Option>
-                    <Option value="num37">37</Option>
-                    <Option value="num38">38</Option>
-                    <Option value="num39">39</Option>
-                    <Option value="num40">40</Option>
-                    <Option value="num41">41</Option>
-                    <Option value="num42">42</Option>
-                    <Option value="num43">43</Option>
-                    <Option value="num44">44</Option>
+                  <Select
+                    showSearch
+                    placeholder="Selecione a categoria"
+                    notFoundContent={loading ? <Spin size="small" /> : null}
+                    filterOption={false}
+                    onSearch={getCategoriesList}
+                  >
+                    {categories.map((category: any) => (
+                      <Option
+                        key={category.uuid ?? category.name}
+                        value={category.uuid}
+                      >
+                        {category.name}
+                      </Option>
+                    ))}
                   </Select>
                 </Form.Item>
 
                 <Form.Item>
                   <div className="flex justify-end gap-6">
-
                     <Button
                       className="bg-[#fff] h-12"
                       size={"large"}

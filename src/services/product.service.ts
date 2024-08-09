@@ -3,7 +3,7 @@ import { apiRequest } from "../services/api.service";
 export async function createProduct(CreateProductDto: CreateProductDto) {
   return apiRequest<ReadProductDto>(
     "post",
-    "/products/create",
+    "/product/create",
     CreateProductDto
   );
 }
