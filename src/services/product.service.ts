@@ -8,8 +8,8 @@ export async function createProduct(CreateProductDto: CreateProductDto) {
   );
 }
 
-export async function getProductsByUuid(checklistUuid: string) {
-  const url = `/products/find-by-uuid?uuid=${checklistUuid}`;
+export async function getProductsByUuid(productUuid: string) {
+  const url = `/product/find-by-uuid?uuid=${productUuid}`;
   return apiRequest<ReadProductDto>("get", url);
 }
 

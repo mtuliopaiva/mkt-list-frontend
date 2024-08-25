@@ -9,7 +9,7 @@ type ReadProductDto = {
   uuid: string;
   name: string;
   price: number;
-  categoryId: string;
+  category: ReadCategoryDto;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;

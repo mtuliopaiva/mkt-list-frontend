@@ -53,14 +53,14 @@ const ProductsList = () => {
         <div className="flex md:flex-1 flex-row gap-4 h-18 md:h-auto items-center justify-center md:w-full">
           <Button
             className="flex h-8 w-8 items-center justify-center rounded bg-[#B0F7E5]"
-            onClick={() => navigate(`/admin/products/view/${record.key}`)}
-          >
+            onClick={() => navigate(`/admin/products/view/${record.uuid || record.key}`)}
+            >
             <EyeTwoTone twoToneColor="#284361" />
           </Button>
 
           <Button
             className="flex h-8 w-8 items-center justify-center rounded bg-[#B0F7E5]"
-            onClick={() => navigate(`/admin/products/edit/${record.key}`)}
+            onClick={() => navigate(`/admin/products/edit/${record.uuid || record.key}`)}
 
           >
             <EditTwoTone twoToneColor="#284361" />
